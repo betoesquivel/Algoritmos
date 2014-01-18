@@ -24,9 +24,21 @@ const int SIZE = 1000000;
 int acumulated_primes_until_index[SIZE];
 vector<int> primes;
 
+bool divisible5(int n){
+	return (n%10 == 5) ? true:false;
+}
 bool is_prime(int n){
+	
+	if(n%2==0){
+		return false; 
+	}else if(n%3==0){
+		return false;
+	}else if(divisible5(n)){
+		return false;
+	}
+
 	int half = n/2;
-	for (int i = 0; primes[i] <= half; i++) {
+	for (int i = 3; primes[i] <= half; i++) {
 		if (n%primes[i]==0) {
 			return false;
 		}
@@ -56,22 +68,18 @@ void prefill_first_primes(){
 }
 
 void find_primes(){
-	// cout<<"I prefill my array and vector..."<<endl;
 	prefill_first_primes();	
-	// cout<<"I prefilled my array and vector..."<<endl;
 	int count = 12, acumulated_primes = 5;
 	while (count < SIZE) {
-		// cout<<"I check if "<<count<<" is a prime..."<<endl;
 		if(is_prime(count)){
-			cout<<count<<" is a prime..."<<endl;
+			cout<<count<<endl;
 			primes.push_back(count);
-			// cout<<"I added "<<count<<" to primes..."<<endl;
 			acumulated_primes++;
 		}
-		// cout<<"I added "<<acumulated_primes<<" to acumulated primes until index..."<<endl;
 		acumulated_primes_until_index[count] = acumulated_primes;
 		count++;		
 	}
+	cout<<acumulated_primes<<endl;
 }
 
 int get_number_of_primes(int a, int b){
