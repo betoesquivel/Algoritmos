@@ -17,33 +17,55 @@
  */
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
+#include "ArbolAVL.h"
+bool debug = true; 
 
 const int SIZE = 1000000;
 int acumulated_primes_until_index[SIZE];
 vector<int> primes;
+ArbolAVL<int> composites;
 
 bool divisible5(int n){
 	return (n%10 == 5) ? true:false;
 }
 bool is_prime(int n){
 	
-	if(n%2==0){
-		return false; 
-	}else if(n%3==0){
+	if(composites.existe(n)){
 		return false;
-	}else if(divisible5(n)){
-		return false;
-	}
-
-	int half = n/2;
-	for (int i = 3; primes[i] <= half; i++) {
-		if (n%primes[i]==0) {
+	}else{
+		if(n%2==0){
+			return false; 
+		}else if(n%3==0){
+			return false;
+		}else if(divisible5(n)){
 			return false;
 		}
+
+		int half = sqrt(n);
+		for (int i = 3; primes[i] <= half; i++) {
+			if (n%primes[i]==0) {
+				return false;
+			}
+		}
+		return true;
 	}
-	return true;
+}
+
+void addPrime(int n){
+	int new_composite = n;
+	primes.push_back(n);
+
+	new_composite+=n;
+	while(new_composite<SIZE){
+		if (debug) {
+			cout<<"Composite: "<<new_composite<<endl;
+		}
+		composites.insertar(new_composite);
+		new_composite+=n;
+	}
 }
 
 void prefill_first_primes(){
@@ -72,14 +94,24 @@ void find_primes(){
 	int count = 12, acumulated_primes = 5;
 	while (count < SIZE) {
 		if(is_prime(count)){
-			cout<<count<<endl;
-			primes.push_back(count);
+			if (debug) {
+				cout<<"Prime: "<<count<<endl;
+			}
+
+			if (count>1000000) {
+				addPrime(count);
+			}else{
+				primes.push_back(count);
+			}
 			acumulated_primes++;
 		}
 		acumulated_primes_until_index[count] = acumulated_primes;
 		count++;		
 	}
-	cout<<acumulated_primes<<endl;
+	if (debug) {
+		cout<<"Terminado..."<<endl;
+		cout<<acumulated_primes<<endl;
+	}
 }
 
 int get_number_of_primes(int a, int b){
