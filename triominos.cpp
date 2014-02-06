@@ -29,8 +29,8 @@ int mat[MAXSIZE][MAXSIZE]; 	//pointer tu square matrix
 int visited[MAXSIZE][MAXSIZE]; 	//pointer tu square matrix
 int triomineCounter = 1;      //counts the triomines painted in matrix to print output.
 int n;      //size of squared matrix (power of 2)
-int firstCellRow;
-int firstCellColumn;//coordinates for initial cell 
+int firstCellRow;//coordinates for initial cell 
+int firstCellColumn;
 
 /* Prints the matrix mat */
 void printMatrix(){
@@ -45,6 +45,7 @@ void printMatrix(){
 	}
 }
 
+/* Prints the matrix visited */
 void printVisited(){
 	if (debug) {
 		cout<<"Visited..."<<endl;
@@ -68,216 +69,100 @@ void fillMatrix(){
 	}
 }
 
-/* Returns true if the cell at mat[row,column] is still in range to paint 
- * its corresponding triomine */
-bool canPaint(int row, int column, int q){
-	bool itCanPaint = false;
-	switch(q) {
-		case 1:
-			if (row%2 == 0 && column%2 != 0) {
-				itCanPaint = true; 
-			}else{
-				itCanPaint = false; 
-			}
-		       break;
-		case 2:
-			if (row%2 == 0 && column%2 == 0) {
-				itCanPaint = true; 
-			}else{
-				itCanPaint = false; 
-			}
-		       break;
-		case 3:
-			if (row%2 != 0 && column%2 == 0) {
-				itCanPaint = true; 
-			}else{
-				itCanPaint = false; 
-			}
-		       break;
-		case 4:
-			if (row%2 != 0 && column%2 != 0) {
-				itCanPaint = true; 
-			}else{
-				itCanPaint = false; 
-			}
-		       break;
+/* Finds the quadrant in which the cell is...
+ * r = row; c = column; s = size;  */
+int findQuadrant(int r, int c, int s) {
+	int quadrant = 1; //start in first quadrant 
 
+	if(c < s/2){
+		//it is in the left half quadrants 2 or 3
+		quadrant++;
+	}else{
+		//it is in the right half quadrants 1 or 4
+		//do nothing...
 	}
-	//if I am at the center quadrant then I can paint
-	if(
-	   (row == ( n/2 - 1 ) && column == ( n/2-1 ) && q == 2) || 
-	   ( row == ( n/2 - 1 ) && column == n/2  && q == 1)   || 
-	   ( row == n/2     && column == ( n/2-1 ) && q == 3) || 
-	   ( row == n/2     && column == n/2  && q == 4)    
-
-	  ){
-		if (debug) {
-			cout<<"center quadrant"<<endl;
-		}
-		itCanPaint = true; 
+	if(r < s/2){
+		//it is in the top half quadrants 1 or 2
+		//do nothing...
+	}else{
+		//it is in the bottom half quadrants 3 or 4
+		quadrant++;
 	}
-	// if(row >= (n/2 - 1) && row <= (n/2) &&
-	//    column >= (n/2 - 1) && column <= (n/2)){
-	// 	return true; 
-	// }else if (row >= 0 && row <= (n/2 - 1) &&
-	//           column >= 0 && column <= (n/2 - 1)){
-	// 	return true; 
-	// }else if (row >= (n/2) && row <= (n - 1) &&
-	//           column >= (n/2) && column <= (n - 1)){
-	// 	return true; 
-	// }else{
-	// 	return false; 
-	// }
-	
-	return itCanPaint; 
-
+	return quadrant; 
 }
 
-/* Paints triomines recursively in matrix given an initial cell
- * in a 2x2 submatrix of the matrix and its position in that submatrix
- * until the whole matrix is filled. r = row; c = column; q = quadrant; */
-void paintTriomine(int r, int c, int q){
+/* Paints triomines recursively in matrix given an initial cell and the size of the 
+ * submatrix to paint... until the whole matrix is filled. 
+ * r = row; c = column; size = size of submatrix; 
+ * infRow and infColumn = first row  and column of submatrix */
+void paintTriomine(int r, int c, int infRow, int infColumn, int size){
+
+	//fill visited cell with triomineCounter
+	mat[r][c] = triomineCounter; 
+
 	if (debug) {
 		cout<<"Triomine counter: "<<triomineCounter<<endl;
 		printMatrix();
-		printVisited();
+		// printVisited();
 	}
-	if(canPaint(r, c, q)){
+
+	if(size >= 2)
+	{
+		//contains the quadrant of the cell
+		int q = findQuadrant(r-infRow, c-infColumn, size); 
+
+		//calculate coordinates of center 2x2 matrix in this submatrix sizexsize
+		int bottomRow, topRow, rightColumn, leftColumn;
+		bottomRow = rightColumn = size / 2; 
+		topRow = leftColumn = bottomRow - 1; 
+
+		//adjust the coordinates of the center matrix, based on it position in
+		//its container submatrix...
+		bottomRow += infRow;
+		topRow += infRow; 
+		rightColumn += infColumn; 
+		leftColumn += infColumn;
+
+		//get infRow and infColumn of a quadrant in this submatrix
+
+		//modify the size of the next matrix to be filled...
+		size /= 2; 
+		//modify triomine counter since I am printing another triomine
+		triomineCounter++;
 		switch(q){
-			case 1:
-				mat[r+1][c] = triomineCounter; 	
-				mat[r+1][c-1] = triomineCounter; 	
-				mat[r][c-1] = triomineCounter; 	
-
-				triomineCounter++;
-
-				//if i haven't painted this cell yet
-				if(visited[r][c] < 1){
-					visited[r][c] += 1; 
-					paintTriomine(r, c, 3);
-				}
-
-				paintTriomine(r+1, c, 2); 
-				paintTriomine(r+1, c-1, 1);
-				paintTriomine(r, c-1, 4);
-
-
+			case 1: 
+				paintTriomine(topRow, leftColumn, topRow - size, leftColumn - size,  size); 
+				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn -  size, size); 
+				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size); 
 				break;
 			case 2: 
-				mat[r+1][c] = triomineCounter; 	
-				mat[r+1][c+1] = triomineCounter; 	
-				mat[r][c+1] = triomineCounter; 	
-
-				triomineCounter++;
-
-				if(visited[r][c] < 1){
-					visited[r][c] += 1; 
-					paintTriomine(r, c, 4);
-				}
-
-				paintTriomine(r+1, c, 1); 
-				paintTriomine(r+1, c+1, 2);
-				paintTriomine(r, c+1, 3);
-
+				paintTriomine(topRow, rightColumn, topRow - size, rightColumn, size); 
+				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size); 
+				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - size, size); 
 				break;
-			case 3:
-				mat[r-1][c] = triomineCounter; 	
-				mat[r-1][c+1] = triomineCounter; 	
-				mat[r][c+1] = triomineCounter; 	
-
-				triomineCounter++;
-
-				if(visited[r][c] < 1){
-					visited[r][c] += 1; 
-					paintTriomine(r, c, 1);
-				}
-
-				paintTriomine(r-1, c, 4); 
-				paintTriomine(r-1, c+1, 3);
-				paintTriomine(r, c+1, 2);
-
+			case 3: 
+				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size); 
+				paintTriomine(topRow, rightColumn, topRow - size, rightColumn, size); 
+				paintTriomine(topRow, leftColumn, topRow - size, leftColumn - size, size); 
 				break;
-			case 4:
-				mat[r-1][c] = triomineCounter; 	
-				mat[r-1][c-1] = triomineCounter; 	
-				mat[r][c-1] = triomineCounter; 	
-
-				triomineCounter++;
-				if(visited[r][c] < 1){
-					visited[r][c] += 1; 
-					paintTriomine(r, c, 2);
-				}
-
-				paintTriomine(r-1, c, 3); 
-				paintTriomine(r-1, c-1, 4);
-				paintTriomine(r, c-1, 1);
-
+			case 4: 
+				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - size, size); 
+				paintTriomine(topRow, leftColumn, topRow - size, leftColumn - size, size); 
+				paintTriomine(topRow, rightColumn, topRow - size, rightColumn, size); 
 				break;
 		}
-	}else{
-		if (debug) {
-			cout<<r<<' '<<c<<" can't paint..."<<endl;
-		}
-	}	
-}
-
-/* Returns the quadrant of cell in a size by size matrix */
-int findQuadrant(int row, int column, int size){
-	int q = -1;
-	if (row < (size / 2)) {
-		//cell is in quadrants either 1 or 2
-		if(column < (size/2)){
-			//cell is in quadrant 2
-			q = 2; 
-		}else{
-			//cell is in quadrant 1
-			q = 1; 
-		}
-	}else{
-		//cell is in quadrants either 1 or 2
-		if(column < (size/2)){
-			//cell is in quadrant 2
-			q = 3; 
-		}else{
-			//cell is in quadrant 1
-			q = 4; 
-		}
-	}
-	return q; 
-}
-
-/* searches recursively for the size 2 matrix in which the firstCell is located and
- * a triomine can be painted. After it finds it, it calls paintTriomine() */
-void paintMatrix(int row, int column, int size){
-	int quadrant = findQuadrant(row, column, size);
-	if(size > 2){
-		switch (quadrant){
-			case 1: column += size / 2; 
-				break;
-			case 2: 
-				break;
-			case 3: row += size / 2; 
-				break;
-			case 4: column += size / 2; 
-				row += size / 2;
-				break;
-		}
-		paintMatrix(row, column, size / 2); 
-	}else {
-		//I found the size 2 initial matrix
-		paintTriomine(firstCellRow, firstCellColumn, quadrant);
 	}
 }
 
 int main(int argc, const char *argv[])
 {
+	triomineCounter = 0; 
 	cout<<"Introduce matrix size: "<<endl;
 	cin>>n; 	
 
 	cout<<"Introduce first filled cell: "<<endl;
 	cin>>firstCellRow>>firstCellColumn;
-	paintMatrix(firstCellRow, firstCellColumn, n); 
-
+	paintTriomine(firstCellRow, firstCellColumn, 0, 0, n); 
 
 	return 0;
 }
