@@ -23,7 +23,7 @@
 using namespace std;
 const int MAXSIZE = 32; 
 
-bool debug = true;
+bool debug = false;
 
 int mat[MAXSIZE][MAXSIZE]; 	//pointer tu square matrix
 int visited[MAXSIZE][MAXSIZE]; 	//pointer tu square matrix
@@ -124,11 +124,10 @@ int findQuadrant(int r, int c, int s) {
  * submatrix to paint... until the whole matrix is filled. 
  * r = row; c = column; size = size of submatrix; 
  * infRow and infColumn = first row  and column of submatrix */
-void paintTriomine(int r, int c, int infRow, int infColumn, int size, int triomineCounter){
+void paintTriomine(int r, int c, int infRow, int infColumn, int size){
 
 	if (debug) {
 		visited[r][c] += 1; 
-		cout<<"Triomine counter: "<<triomineCounter<<endl;
 		printMatrix();
 		printVisited();
 	}
@@ -171,47 +170,47 @@ void paintTriomine(int r, int c, int infRow, int infColumn, int size, int triomi
 		}
 
 		//modify triomine counter since I am printing another triomine
-		triomineCounter = getUnusedNumber();
+		int triomineCounter = getUnusedNumber();
 		switch(q){
 			case 1: 
 				mat[topRow][leftColumn] = triomineCounter;
 				mat[bottomRow][leftColumn] = triomineCounter;
 				mat[bottomRow][rightColumn] = triomineCounter;
 				triomineCounter++;
-					paintTriomine(r, c, topRow - (size - 1)/2, rightColumn,  size/2, triomineCounter); 
-				paintTriomine(topRow, leftColumn, topRow - (size - 1)/2, leftColumn - (size - 1)/2,  size/2, triomineCounter); 
-				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - (size - 1)/2, size/2, triomineCounter); 
-				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size/2, triomineCounter); 
+					paintTriomine(r, c, topRow - (size - 1)/2, rightColumn,  size/2); 
+				paintTriomine(topRow, leftColumn, topRow - (size - 1)/2, leftColumn - (size - 1)/2,  size/2); 
+				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - (size - 1)/2, size/2); 
+				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size/2); 
 				break;
 			case 2: 
 				mat[topRow][rightColumn] = triomineCounter;
 				mat[bottomRow][rightColumn] = triomineCounter;
 				mat[bottomRow][leftColumn] = triomineCounter;
 				triomineCounter++;
-					paintTriomine(r, c, topRow - (size - 1)/2, leftColumn - (size - 1)/2,  size/2, triomineCounter); 
-				paintTriomine(topRow, rightColumn, topRow - (size - 1)/2, rightColumn, size/2, triomineCounter); 
-				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size/2, triomineCounter); 
-				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - (size - 1)/2, size/2, triomineCounter); 
+					paintTriomine(r, c, topRow - (size - 1)/2, leftColumn - (size - 1)/2,  size/2); 
+				paintTriomine(topRow, rightColumn, topRow - (size - 1)/2, rightColumn, size/2); 
+				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size/2); 
+				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - (size - 1)/2, size/2); 
 				break;
 			case 3: 
 				mat[bottomRow][rightColumn] = triomineCounter;
 				mat[topRow][rightColumn] = triomineCounter;
 				mat[topRow][leftColumn] = triomineCounter;
 				triomineCounter++;
-					paintTriomine(r, c, bottomRow, leftColumn - (size - 1)/2,  size/2, triomineCounter); 
-				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size/2, triomineCounter); 
-				paintTriomine(topRow, rightColumn, topRow - (size - 1)/2, rightColumn, size/2, triomineCounter); 
-				paintTriomine(topRow, leftColumn, topRow - (size - 1)/2, leftColumn - (size - 1)/2, size/2, triomineCounter); 
+					paintTriomine(r, c, bottomRow, leftColumn - (size - 1)/2,  size/2); 
+				paintTriomine(bottomRow, rightColumn, bottomRow, rightColumn, size/2); 
+				paintTriomine(topRow, rightColumn, topRow - (size - 1)/2, rightColumn, size/2); 
+				paintTriomine(topRow, leftColumn, topRow - (size - 1)/2, leftColumn - (size - 1)/2, size/2); 
 				break;
 			case 4: 
 				mat[bottomRow][leftColumn] = triomineCounter;
 				mat[topRow][leftColumn] = triomineCounter;
 				mat[topRow][rightColumn] = triomineCounter;
 				triomineCounter++;
-					paintTriomine(r, c, bottomRow, rightColumn,  size/2, triomineCounter); 
-				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - (size - 1)/2, size/2, triomineCounter); 
-				paintTriomine(topRow, leftColumn, topRow - (size - 1)/2, leftColumn - (size - 1)/2, size/2, triomineCounter); 
-				paintTriomine(topRow, rightColumn, topRow - (size - 1)/2, rightColumn, size/2, triomineCounter); 
+					paintTriomine(r, c, bottomRow, rightColumn,  size/2); 
+				paintTriomine(bottomRow, leftColumn, bottomRow, leftColumn - (size - 1)/2, size/2); 
+				paintTriomine(topRow, leftColumn, topRow - (size - 1)/2, leftColumn - (size - 1)/2, size/2); 
+				paintTriomine(topRow, rightColumn, topRow - (size - 1)/2, rightColumn, size/2); 
 				break;
 		}
 	}else{
@@ -228,7 +227,8 @@ int main(int argc, const char *argv[])
 	cin>>firstCellRow>>firstCellColumn;
 
 	fillNumbers();
-	paintTriomine(firstCellRow, firstCellColumn, 0, 0, n, 1); 
+	paintTriomine(firstCellRow, firstCellColumn, 0, 0, n); 
+	printMatrix();
 
 	return 0;
 }
