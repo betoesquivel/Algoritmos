@@ -19,6 +19,7 @@
 
 #include <iostream>
 using namespace std;
+bool debug = true; 
 
 int min (int a, int b)
 {
@@ -31,11 +32,17 @@ int getLetterIndex(char c)
 	return (c - 97); 
 }
 
+void printArray(int arr[], int length){
+	for (int i = 0; i < length; i++) {
+		cout<<arr[i]<<endl;
+	}
+}
+
 //Prints the common letters between s1 and s2
 void printCommonPermutations(string s1, string s2)
 {
-	int letrasS1[26];
-	int letrasS2[26];
+	int letrasS1[26] = {};
+	int letrasS2[26] = {};
 	for (unsigned int i = 0; i < s1.length(); i++) {
 		int letterIndex = getLetterIndex(s1[i]); 
 		letrasS1[letterIndex] += 1; 
@@ -44,6 +51,14 @@ void printCommonPermutations(string s1, string s2)
 		int letterIndex = getLetterIndex(s2[i]); 
 		letrasS2[letterIndex] += 1; 
 	}
+
+	// if (debug) {
+	// 	cout<<"Letras encontradas s1: " <<endl;
+	// 	printArray(letrasS1, 26);
+	// 	cout<<"Letras encontradas s2: " <<endl;
+	// 	printArray(letrasS1, 26);
+	// }
+	
 	for (int i = 0; i < 26; i++) {
 		if (letrasS1[i] > 0 && letrasS2[i] > 0) {
 			char c = i + 97; 
@@ -65,11 +80,10 @@ int main(int argc, const char *argv[])
 	string word1, word2;
 
 	cin>>cases; 
-	cin>>word1>>word2; 
 	while(cases > 0){
+		cin>>word1>>word2; 
 		printCommonPermutations(word1, word2);
 		cases--; 
-		cin>>word1>>word2;
 	}
 	return 0;
 }
