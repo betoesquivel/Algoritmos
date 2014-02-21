@@ -20,6 +20,43 @@
 #include <iostream>
 using namespace std;
 
+int min (int a, int b)
+{
+	return ( (a < b) ? a:b ); 
+}
+
+//returns the index of the letter in an array where a = 0 and so on...
+int getLetterIndex(char c)
+{
+	return (c - 97); 
+}
+
+//Prints the common letters between s1 and s2
+void printCommonPermutations(string s1, string s2)
+{
+	int letrasS1[26];
+	int letrasS2[26];
+	for (unsigned int i = 0; i < s1.length(); i++) {
+		int letterIndex = getLetterIndex(s1[i]); 
+		letrasS1[letterIndex] += 1; 
+	}
+	for (unsigned int i = 0; i < s2.length(); i++) {
+		int letterIndex = getLetterIndex(s2[i]); 
+		letrasS2[letterIndex] += 1; 
+	}
+	for (int i = 0; i < 26; i++) {
+		if (letrasS1[i] > 0 && letrasS2[i] > 0) {
+			char c = i + 97; 
+			int coincidencias = min(letrasS1[i], letrasS2[i]); 	
+			while (coincidencias > 0){
+				cout<<c; 		
+				coincidencias--;
+			}
+		}
+	}
+	cout<<endl;
+}
+
 int main(int argc, const char *argv[])
 {
 	int cases; 
@@ -30,9 +67,9 @@ int main(int argc, const char *argv[])
 	cin>>cases; 
 	cin>>word1>>word2; 
 	while(cases > 0){
-		
-		cin>>word1>>word2;
+		printCommonPermutations(word1, word2);
 		cases--; 
+		cin>>word1>>word2;
 	}
 	return 0;
 }
