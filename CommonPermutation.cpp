@@ -19,7 +19,7 @@
 
 #include <iostream>
 using namespace std;
-bool debug = true; 
+// bool debug = true; 
 
 int min (int a, int b)
 {
@@ -43,11 +43,11 @@ void printCommonPermutations(string s1, string s2)
 {
 	int letrasS1[26] = {};
 	int letrasS2[26] = {};
-	for (unsigned int i = 0; i < s1.length(); i++) {
+	for (int i = 0; i < s1.length(); i++) {
 		int letterIndex = getLetterIndex(s1[i]); 
 		letrasS1[letterIndex] += 1; 
 	}
-	for (unsigned int i = 0; i < s2.length(); i++) {
+	for (int i = 0; i < s2.length(); i++) {
 		int letterIndex = getLetterIndex(s2[i]); 
 		letrasS2[letterIndex] += 1; 
 	}
