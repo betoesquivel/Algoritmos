@@ -30,6 +30,8 @@ using namespace std;
 
 int crossings, streets;
 int streetDecibelGraph[1000][1000];
+const int infinity = -1;
+bool debug = false; 
 
 void init0s(){
 	for (int r = 0; r < 1000; r++) {
@@ -39,15 +41,28 @@ void init0s(){
 	}
 }
 
+void printGraph(){
+	for (int r = 0; r < crossings; r++) {
+		for (int c = 0; c < crossings; c++) {
+			cout<<streetDecibelGraph[r][c]<<' ';
+		}
+		cout<<endl;
+	}
+}
+
 void clearMap(){
 	for (int r = 0; r < crossings; r++) {
 		for (int c = 0; c < crossings; c++) {
 			if (r == c) {
 				streetDecibelGraph[r][c] = 0;
 			}else{
-				streetDecibelGraph[r][c] = INT_MAX;
+				streetDecibelGraph[r][c] = infinity;
 			}
 		}
+	}
+	if (debug) {
+		cout<<"Map cleared..."<<endl;
+		printGraph();
 	}
 }
 
@@ -55,25 +70,45 @@ void fillMap(){
 	int n1, n2, d; //r=row; c=column; d=decibels; node1, node2 and arch
 	for (int i = 0; i < streets; i++) {
 		cin>>n1>>n2>>d;
+		n1--; n2--;
 		streetDecibelGraph[n1][n2] = streetDecibelGraph[n2][n1] = d; 
 	}		
+	if (debug) {
+		cout<<"Map filled..."<<endl;
+		printGraph();
+	}
 }
 
-int min(int n1, int n2){
-	return (n1 < n2) ? n1:n2;
+/* Returns the bigger number of both received as parameters */
+int max(int n1, int n2){
+	return (n1 > n2) ? n1:n2; 
+}
+
+/* Returns the minimum between n1 or n2 + n3 handling infinity */
+int min(int n1, int n2, int n3){
+	if(n2 == infinity || n3 == infinity){
+		return n1;
+	}else{
+		int bigger = max(n2,n3);
+		if(n1 > bigger || n1 == infinity){
+			return bigger;
+		}else{
+			return n1;
+		}
+	}
 }
 
 void floydTheMap(){
 	for (int k = 0; k < crossings; k++) {
 		for (int i = 0; i < crossings; i++) {
 			for (int j = 0; j < crossings; j++) {
-				if (streetDecibelGraph[i][k] == INT_MAX || streetDecibelGraph[k][j] == INT_MAX) {
-					streetDecibelGraph[i][j] = streetDecibelGraph[i][j];
-				}else{
-					streetDecibelGraph[i][j] = min(streetDecibelGraph[i][j], streetDecibelGraph[i][k] + streetDecibelGraph[k][j]);
-				}
+				streetDecibelGraph[i][j] = min(streetDecibelGraph[i][j], streetDecibelGraph[i][k], streetDecibelGraph[k][j]);
 			}
 		}
+	}
+	if (debug) {
+		cout<<"Map Floyed..."<<endl;
+		printGraph();
 	}
 }
 
@@ -98,8 +133,9 @@ int main(int argc, const char *argv[])
 		int start, end;
 		for (int i = 0; i < queries; i++) {
 			cin>>start>>end;
+			start--; end--;
 			int minimum = minimumSoundIntensityLevel(start, end);
-			if (minimum != INT_MAX) {
+			if (minimum != infinity) {
 				cout<<minimum<<endl;
 			}else {
 				cout<<"no path"<<endl;
