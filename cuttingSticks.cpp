@@ -24,18 +24,9 @@ It is easy to notice that different selections in the order of cutting can led t
 using namespace std;
 
 int length, cuts, matrixLength; 
-int cutsArray[50];
+int cutsArray[100];
 int optimizedCutsMatrix[1000][1000];
-const int infinity = -1;
-bool debug = true; 
-
-void init0s(){
-	for (int r = 0; r < 1000; r++) {
-		for (int c = 0; c < 1000; c++) {
-			optimizedCutsMatrix[r][c] = 0;
-		}
-	}
-}
+bool debug = false; 
 
 void printArray(){
 	for (int i = 0; i < matrixLength; i++) {
@@ -53,20 +44,6 @@ void printMatrix(){
 	}
 }
 
-void clearMatrix(){
-	for (int r = 0; r < matrixLength; r++) {
-		for (int c = 0; c < matrixLength; c++) {
-			if (r == c) {
-				optimizedCutsMatrix[r][c] = 0;
-			}
-		}
-	}
-	if (debug) {
-		cout<<"Matrix cleared..."<<endl;
-		printMatrix();
-	}
-}
-
 void fillCutsArray(){
 	int previousCutPosition = 0, currentCutPosition; 
 	for (int i = 0; i < cuts; i++) {
@@ -78,36 +55,46 @@ void fillCutsArray(){
 	if (debug) {
 		cout<<"Cut array filled..."<<endl;
 		printArray();
+		cout<<"Finished printing..."<<endl;
 	}
 }
 
-/* Returns the bigger number of both received as parameters */
-int max(int n1, int n2){
-	return (n1 > n2) ? n1:n2; 
-}
-
-/* Returns the minimum between n1 or n2 + n3 handling infinity */
-int min(int n1, int n2, int n3){
-	if(n2 == infinity || n3 == infinity){
-		return n1;
-	}else{
-		int bigger = max(n2,n3);
-		if(n1 > bigger || n1 == infinity){
-			return bigger;
-		}else{
-			return n1;
+/* Returns the minimum cut cost from every permutation */
+int min(int i, int j){
+	int minimum = INT_MAX; 
+	for (int x = i; x < j; x++) {
+		int sum = optimizedCutsMatrix[i][x] + optimizedCutsMatrix[x+1][j];
+		minimum = (sum < minimum) ? sum : minimum; 
+		if (debug) {
+			cout<<optimizedCutsMatrix[i][x]<<' '<<optimizedCutsMatrix[x+1][j]<<endl;
+			cout<<"Minimum until now: "<<minimum<<endl;
 		}
 	}
+
+	//suma de los cuts de i hasta j
+	for (int x = i; x <= j; x++) {
+		minimum += cutsArray[x];
+	}
+
+	if (debug) {
+		cout<<"Final minimum from i to j: "<<minimum<<endl;
+	}
+
+	return minimum; 
 }
 
 void optimizeTheMatrixCuts(){
-	for (int k = 0; k < matrixLength; k++) {
-		for (int i = 0; i < matrixLength; i++) {
-			for (int j = 0; j < matrixLength; j++) {
-				optimizedCutsMatrix[i][j] = min(optimizedCutsMatrix[i][j], optimizedCutsMatrix[i][k], optimizedCutsMatrix[k][j]);
-			}
+	
+	for (int diag=1; diag < matrixLength; diag++){
+		if (debug) {
+			cout<<"Diag No. "<<diag<<endl;
+		}
+		for (int i = 0; i < matrixLength-diag; i++) {
+			int j = i + diag;
+			optimizedCutsMatrix[i][j] = min(i, j); 
 		}
 	}
+
 	if (debug) {
 		cout<<"Matrix optimized..."<<endl;
 		printMatrix();
@@ -119,7 +106,7 @@ int minimumCuts(int n1, int n2){
 }
 
 int minimumCost(){
-	return optimizedCutsMatrix[cuts][cuts];
+	return optimizedCutsMatrix[0][cuts];
 }
 
 int main(int argc, const char *argv[])
@@ -128,10 +115,12 @@ int main(int argc, const char *argv[])
 	while (length != 0) {
 		cin>>cuts;
 		matrixLength = cuts + 1; 
+		if (debug) {
+			cout<<"Cuts: "<<cuts<<" MatrixLength: "<<matrixLength<<endl;
+		}
 		fillCutsArray();
-		
-		// optimizeTheMatrixCuts();
-		// cout<<"The minimum cutting is "<<minimumCost()<<endl;
+		optimizeTheMatrixCuts();
+		cout<<"The minimum cutting is "<<minimumCost()<<"."<<endl;
 
 		cin>>length; 
 	}
