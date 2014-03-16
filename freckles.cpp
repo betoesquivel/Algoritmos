@@ -17,6 +17,7 @@
  */
 #include <iostream>
 #include <queue>
+#include <vector>
 #include <cmath>
 using namespace std;
 
@@ -30,9 +31,10 @@ class FreckleConnection
 		FreckleConnection();
 		FreckleConnection(int startFreckleIndex, int endFreckleIndex, double inkUsed);
 
-		int getStartFreckleIndex(){return startFreckleIndex;}
-		int getEndFreckleIndex(){return endFreckleIndex;}
-		double getInkUsed(){return inkUsed;}
+		int getStartFreckleIndex()const {return startFreckleIndex;}
+		int getEndFreckleIndex()const {return endFreckleIndex;}
+		double getInkUsed()const {return inkUsed;}
+		friend bool operator>(const FreckleConnection& f1, const FreckleConnection& f2);
 		friend bool operator<(const FreckleConnection& f1, const FreckleConnection& f2);
 };
 
@@ -41,6 +43,11 @@ FreckleConnection::FreckleConnection(int start, int end, double ink)
 	startFreckleIndex = start;
 	endFreckleIndex = end;
 	inkUsed = ink;
+}
+
+bool operator>(const FreckleConnection& f1, const FreckleConnection& f2)
+{
+	return (f1.getInkUsed() > f2.getInkUsed()) ? true : false; 
 }
 
 bool operator<(const FreckleConnection& f1, const FreckleConnection& f2)
@@ -54,7 +61,7 @@ double calculateInk(double x1, double y1, double x2, double y2)
 }
 double calculateMinimumAmountOfInk(double *frecklesX, double *frecklesY, int numFreckles)
 {
-	priority_queue<FreckleConnection> connections;
+	priority_queue< FreckleConnection, vector<FreckleConnection>, greater<FreckleConnection> > connections;
 	bool *isConnected = new bool[numFreckles];
 	for (int i = 0; i < numFreckles; i++) {
 		isConnected[i] = false;
@@ -73,17 +80,20 @@ double calculateMinimumAmountOfInk(double *frecklesX, double *frecklesY, int num
 	double totalInk = 0;
 	while (!connections.empty())
 	{
+		start = connections.top().getStartFreckleIndex();
 		end = connections.top().getEndFreckleIndex();
+		ink = connections.top().getInkUsed();
 		//reviso que la destination no este visitada
 		if (!isConnected[end]) {
 			//conecto la freckle
 			isConnected[end] = true;
 			//sumo la tinta usada para esto
-			ink = connections.top().getInkUsed();
 			totalInk += ink;
 
+			//saco la conexion
+			connections.pop();
+
 			//agrego el resto de las conexiones desde start
-			start = connections.top().getStartFreckleIndex();
 			for (int i = 0; i < numFreckles; i++) {
 				if (!isConnected[i])
 				{
@@ -93,8 +103,10 @@ double calculateMinimumAmountOfInk(double *frecklesX, double *frecklesY, int num
 					connections.push(newConnection);
 				}
 			}
+		}else
+		{
+			connections.pop();
 		}
-		connections.pop();
 	}	
 	return totalInk;
 	
@@ -113,6 +125,8 @@ int main(int argc, const char *argv[])
 			cin >> frecklesX[i] >> frecklesY[i];
 		}
 		cout << "Minimum: " <<calculateMinimumAmountOfInk(frecklesX, frecklesY, numFreckles) << endl;
+		delete [] frecklesX;
+		delete [] frecklesY;
 		cases--;
 	}
 	return 0;
