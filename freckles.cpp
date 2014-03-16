@@ -21,6 +21,8 @@
 #include <cmath>
 using namespace std;
 
+bool debug = true;
+
 class FreckleConnection
 {
 	private:
@@ -34,9 +36,26 @@ class FreckleConnection
 		int getStartFreckleIndex()const {return startFreckleIndex;}
 		int getEndFreckleIndex()const {return endFreckleIndex;}
 		double getInkUsed()const {return inkUsed;}
-		friend bool operator>(const FreckleConnection& f1, const FreckleConnection& f2);
-		friend bool operator<(const FreckleConnection& f1, const FreckleConnection& f2);
+		bool operator>(/* const FreckleConnection& f1,  */const FreckleConnection& f2)const
+		{
+			if (debug) {
+				cout << " Comparison of " <<inkUsed<<'>' <<f2.getInkUsed() <<endl;
+				cout << (getInkUsed() > f2.getInkUsed()) <<endl;
+			}
+			return getInkUsed() > f2.getInkUsed() ; 
+		}
+		bool operator<(/* const FreckleConnection& f1,  */const FreckleConnection& f2)const
+		{
+			if (debug) {
+				cout << " Comparison of " <<inkUsed<<'<' <<f2.getInkUsed() <<endl;
+				cout << (getInkUsed() < f2.getInkUsed()) <<endl;
+			}
+			return getInkUsed() < f2.getInkUsed() ; 
+		}
+		// friend bool operator>(const FreckleConnection& f1, const FreckleConnection& f2);
+		// friend bool operator<(const FreckleConnection& f1, const FreckleConnection& f2);
 };
+
 
 FreckleConnection::FreckleConnection(int start, int end, double ink)
 {
@@ -45,16 +64,25 @@ FreckleConnection::FreckleConnection(int start, int end, double ink)
 	inkUsed = ink;
 }
 
-bool operator>(const FreckleConnection& f1, const FreckleConnection& f2)
-{
-	return (f1.getInkUsed() > f2.getInkUsed()) ? true : false; 
-}
-
-bool operator<(const FreckleConnection& f1, const FreckleConnection& f2)
-{
-	return (f1.getInkUsed() < f2.getInkUsed()) ? true : false; 
-}
-
+// struct lessThanByInk
+// {
+// 
+// 	bool operator<(const FreckleConnection& f1, const FreckleConnection& f2)const
+// 	{
+// 		return f1.getInkUsed() < f2.getInkUsed() ; 
+// 	}
+// 
+// };
+// 
+// struct greaterThanByInk
+// {
+// 
+// 	bool operator>(const FreckleConnection& f1, const FreckleConnection& f2)const
+// 	{
+// 		return f1.getInkUsed() > f2.getInkUsed() ; 
+// 	}
+// 
+// };
 double calculateInk(double x1, double y1, double x2, double y2)
 {
 	return sqrt( pow((y2 - y1), 2) + pow((x2 - x1), 2) );
@@ -70,8 +98,8 @@ double calculateMinimumAmountOfInk(double *frecklesX, double *frecklesY, int num
 	int end; 
 	double ink;
 	for (int i = 1; i < numFreckles; i++) {
-		ink = calculateInk(frecklesX[start], frecklesY[start], frecklesX[i], frecklesY[i]);		
 		end = i;
+		ink = calculateInk(frecklesX[start], frecklesY[start], frecklesX[end], frecklesY[end]);		
 		FreckleConnection newConnection(start, end, ink);
 		connections.push(newConnection);
 	}
@@ -83,12 +111,24 @@ double calculateMinimumAmountOfInk(double *frecklesX, double *frecklesY, int num
 		start = connections.top().getStartFreckleIndex();
 		end = connections.top().getEndFreckleIndex();
 		ink = connections.top().getInkUsed();
+		if (debug) {
+			cout << "MINIMUM not connected " <<start<<endl;
+			cout << "start: " <<start<<endl;
+			cout << "end: " <<end<<endl;
+			cout << "ink: " <<ink<<endl;
+		}
 		//reviso que la destination no este visitada
 		if (!isConnected[end]) {
 			//conecto la freckle
 			isConnected[end] = true;
 			//sumo la tinta usada para esto
 			totalInk += ink;
+			if (debug) {
+				cout << "MINIMUM not connected " <<start<<endl;
+				cout << "start: " <<start<<endl;
+				cout << "end: " <<end<<endl;
+				cout << "ink: " <<ink<<endl;
+			}
 
 			//saco la conexion
 			connections.pop();
