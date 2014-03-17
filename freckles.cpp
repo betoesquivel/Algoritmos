@@ -23,6 +23,7 @@
 using namespace std;
 
 bool debug = false;
+double freckleMatrix[105][105];
 
 class FreckleConnection
 {
