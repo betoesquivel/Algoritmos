@@ -16,12 +16,13 @@
  * =====================================================================================
  */
 #include <iostream>
+#include <iomanip>
 #include <queue>
 #include <vector>
 #include <cmath>
 using namespace std;
 
-bool debug = true;
+bool debug = false;
 
 class FreckleConnection
 {
@@ -52,6 +53,13 @@ class FreckleConnection
 			}
 			return getInkUsed() < f2.getInkUsed() ; 
 		}
+		friend ostream &operator<<(ostream &out, FreckleConnection f1)
+		{
+			out<<"start: " <<f1.getStartFreckleIndex()<<endl;
+			out<<"end: " <<f1.getEndFreckleIndex()<<endl;
+			out<<"ink: " <<f1.getInkUsed()<<endl;
+			return out; 
+		}			
 		// friend bool operator>(const FreckleConnection& f1, const FreckleConnection& f2);
 		// friend bool operator<(const FreckleConnection& f1, const FreckleConnection& f2);
 };
@@ -62,6 +70,17 @@ FreckleConnection::FreckleConnection(int start, int end, double ink)
 	startFreckleIndex = start;
 	endFreckleIndex = end;
 	inkUsed = ink;
+}
+
+void printAllConnections(priority_queue<FreckleConnection, vector<FreckleConnection>, greater<FreckleConnection> >q)
+{
+	priority_queue<FreckleConnection, vector<FreckleConnection>, greater<FreckleConnection> > newPQ = q; 
+	cout<<"QUEUE::"<<endl;
+	while (!newPQ.empty())
+	{
+		cout<<newPQ.top()<<endl;
+		newPQ.pop();
+	}
 }
 
 // struct lessThanByInk
@@ -112,10 +131,7 @@ double calculateMinimumAmountOfInk(double *frecklesX, double *frecklesY, int num
 		end = connections.top().getEndFreckleIndex();
 		ink = connections.top().getInkUsed();
 		if (debug) {
-			cout << "MINIMUM not connected " <<start<<endl;
-			cout << "start: " <<start<<endl;
-			cout << "end: " <<end<<endl;
-			cout << "ink: " <<ink<<endl;
+			printAllConnections(connections);
 		}
 		//reviso que la destination no este visitada
 		if (!isConnected[end]) {
@@ -133,6 +149,8 @@ double calculateMinimumAmountOfInk(double *frecklesX, double *frecklesY, int num
 			//saco la conexion
 			connections.pop();
 
+			//agrego las conexiones del nuevo lugar al que llegue
+			start = end; 
 			//agrego el resto de las conexiones desde start
 			for (int i = 0; i < numFreckles; i++) {
 				if (!isConnected[i])
@@ -164,7 +182,8 @@ int main(int argc, const char *argv[])
 		for (int i = 0; i < numFreckles; i++) {
 			cin >> frecklesX[i] >> frecklesY[i];
 		}
-		cout << "Minimum: " <<calculateMinimumAmountOfInk(frecklesX, frecklesY, numFreckles) << endl;
+		cout << fixed << setprecision(2);
+		cout << calculateMinimumAmountOfInk(frecklesX, frecklesY, numFreckles) << endl;
 		delete [] frecklesX;
 		delete [] frecklesY;
 		cases--;
