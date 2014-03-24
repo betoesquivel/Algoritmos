@@ -174,7 +174,8 @@ int main(int argc, const char *argv[])
 {
 	int cases, numFreckles; 
 	double *frecklesX, *frecklesY;
-	cin >> cases; 
+	// cin >> cases; 
+	cases = 1;
 	while(cases > 0) 
 	{
 		cin >> numFreckles;
