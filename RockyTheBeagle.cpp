@@ -134,6 +134,10 @@ int main()
    cin >> cases; 
    while (count < cases) {
    	cin >> n >> k; 
+	if (n < 0 || k < 0) {
+		count ++; 
+		continue; 
+	}
 	//clear the graph
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
