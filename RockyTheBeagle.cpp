@@ -24,7 +24,7 @@
 #include <limits.h>
  
 // Number of vertices in the graph
-#define V 5
+#define V 50
  
 using namespace std;
 
@@ -52,16 +52,16 @@ void printSolution(int dist[], int n)
  
 // Funtion that implements Dijkstra's single source shortest path algorithm
 // for a graph represented using adjacency matrix representation
-int dijkstraMaxShortestPath(int graph[V][V], int src)
+int dijkstraMaxShortestPath(int graph[V][V], int src, int nodes)
 {
-     int dist[V];     // The output array.  dist[i] will hold the shortest
+     int dist[nodes];     // The output array.  dist[i] will hold the shortest
                       // distance from src to i
  
-     bool sptSet[V]; // sptSet[i] will true if vertex i is included in shortest
+     bool sptSet[nodes]; // sptSet[i] will true if vertex i is included in shortest
                      // path tree or shortest distance from src to i is finalized
  
      // Initialize all distances as INFINITE and stpSet[] as false
-     for (int i = 0; i < V; i++)
+     for (int i = 0; i < nodes; i++)
         dist[i] = INT_MAX, sptSet[i] = false;
  
      // Distance of source vertex from itself is always 0
@@ -71,7 +71,7 @@ int dijkstraMaxShortestPath(int graph[V][V], int src)
      int maxShortestPath = src;
 
      // Find shortest path for all vertices
-     for (int count = 0; count < V-1; count++)
+     for (int count = 0; count < nodes-1; count++)
      {
        // Pick the minimum distance vertex from the set of vertices not
        // yet processed. u is always equal to src in first iteration.
@@ -81,7 +81,7 @@ int dijkstraMaxShortestPath(int graph[V][V], int src)
        sptSet[u] = true;
  
        // Update dist value of the adjacent vertices of the picked vertex.
-       for (int v = 0; v < V; v++)
+       for (int v = 0; v < nodes; v++)
  
          // Update dist[v] only if is not in sptSet, there is an edge from 
          // u to v, and total weight of path from src to  v through u is 
@@ -94,22 +94,34 @@ int dijkstraMaxShortestPath(int graph[V][V], int src)
      }
  
      // print the constructed distance array
-     printSolution(dist, V);
+     printSolution(dist, nodes);
      return maxShortestPath; 
 }
  
 // driver program to test above function
 int main()
 {
+   int cases; 
+   int count = 0;
+   char X, Y;
+   int  c; 
+   int n, k; 
+   int graph[V][V] ;
+   cin >> cases; 
+   while (count < cases) {
+   	cin >> n >> k; 
+	int i = 0;
+	while (i < k) {
+		cin >> X >> Y >> c; 
+		graph[X - 'A'][Y - 'A'] = c; 	
+		i++;		
+	}
+   	
+        cout << "Case " << count + 1 << ": " << (char) ('A' + dijkstraMaxShortestPath(graph, 0, n)) << endl;
+   	count++;		
+   }
    /* Let us create the example graph discussed above */
-   int graph[V][V] = {{0, 5, 4, 7, 0},
-                      {5, 0, 0, 0, 3},
-                      {4, 0, 0, 2, 0},
-                      {7, 0, 2, 0, 1},
-                      {0, 3, 0, 1, 0}
-                     };
- 
-    cout << "Case 1: " << (char) ('A' + dijkstraMaxShortestPath(graph, 0)) << endl;
+                   
  
     return 0;
 }
