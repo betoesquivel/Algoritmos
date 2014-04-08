@@ -24,10 +24,11 @@
 #include <limits.h>
  
 // Number of vertices in the graph
-#define V 50
+#define V 100
  
 using namespace std;
 bool debug = false; 
+int dist[V]; 
  
 // A utility function to find the vertex with minimum distance value, from
 // the set of vertices not yet included in shortest path tree
@@ -66,9 +67,9 @@ void printGraph (int graph[V][V], int n)
  
 // Funtion that implements Dijkstra's single source shortest path algorithm
 // for a graph represented using adjacency matrix representation
-int dijkstraMaxShortestPath(int graph[V][V], int src, int nodes)
+void dijkstraMaxShortestPath(int graph[V][V], int src, int nodes)
 {
-     int dist[nodes];     // The output array.  dist[i] will hold the shortest
+     /* int dist[nodes]; */     // The output array.  dist[i] will hold the shortest
                       // distance from src to i
  
      bool sptSet[nodes]; // sptSet[i] will true if vertex i is included in shortest
@@ -106,20 +107,19 @@ int dijkstraMaxShortestPath(int graph[V][V], int src, int nodes)
          if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX 
                                        && dist[u]+graph[u][v] < dist[v]){
 		    dist[v] = dist[u] + graph[u][v];
-		    if (dist[v] > dist[maxShortestPath]) {
-		    	maxShortestPath = v; 
-		    }else{
+		    // if (dist[v] > dist[maxShortestPath]) {
+		    // 	maxShortestPath = v; 
+		    // }else{
 			    if (dist[v] == dist[maxShortestPath]) {
-			    	maxShortestPath = ( v <  maxShortestPath ) ? v : maxShortestPath;  
+			    	maxShortestPath = ( v <=  maxShortestPath ) ? v : maxShortestPath;  
 			    }
-		    }
+		    // }
 	 }
        }
      }
  
      // print the constructed distance array
      // printSolution(dist, nodes);
-     return maxShortestPath; 
 }
  
 // driver program to test above function
@@ -169,7 +169,15 @@ int main()
 	if (debug) {
 		printGraph(graph, n); 
 	}
-        cout << "Case " << count + 1 << ": " << (char) ('A' + dijkstraMaxShortestPath(graph, 0, n)) << endl;
+	//I do dijkstra and fill dist
+	dijkstraMaxShortestPath(graph, 0, n);
+	int max = 0;
+	for (int index = 0; index < n; index++) {
+		if (dist[index] > dist[max]) {
+			max = index; 
+		}
+	}
+        cout << "Case " << count + 1 << ": " << (char) ('A' + max) << endl;
    	count++;		
    }
    /* Let us create the example graph discussed above */
