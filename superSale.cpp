@@ -1,4 +1,6 @@
 #include <iostream>
+#include <queue>
+#include <vector>
 
 using namespace std;
 
@@ -32,6 +34,23 @@ void printWeights (int people[], int nPeople){
 
 int dynamicBackpack(int prices[], int weights[], int nObjects, int people[], int nPeople){
     int max = 0;
+    priority_queue<int, vector<int>, greater<int> > orderedPeople; //ordered the people according to their weights
+
+    for (int i = 0; i < nPeople; i++){
+        orderedPeople.push(people[i]);
+    }
+
+    cout << "Ordered: " << endl;
+    while (!orderedPeople.empty()){
+        cout << orderedPeople.top() << endl;
+        orderedPeople.pop();
+
+        //while the top element of ordered people, is the
+        //same as the weight I am currently in
+        //I will add the current max to max and pop the weight
+        //So on until the list is empty
+    }
+
 
     return max;
 }
