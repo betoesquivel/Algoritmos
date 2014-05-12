@@ -10,10 +10,13 @@ void requestObjects (int prices[], int weights[], int numObjects){
     }
 }
 
-void requestWeights (int people[], int nPeople){
+int requestWeights (int people[], int nPeople){
+    int max = -1;
     for (int i = 0; i < nPeople; i++){
         cin >> people[i];
+        max = (people[i] > max) ? people[i]:max;
     }
+    return max;
 }
 
 void printObjects (int prices[], int weights[], int numObjects){
@@ -32,9 +35,17 @@ void printWeights (int people[], int nPeople){
     }
 }
 
-int dynamicBackpack(int prices[], int weights[], int nObjects, int people[], int nPeople){
+int getMax(int a, int b){
+    return (a > b) ? a:b;
+}
+
+int dynamicBackpack(int prices[], int weights[], int nObjects, int people[], int nPeople, int maxPersonCapacity){
     int max = 0;
     priority_queue<int, vector<int>, greater<int> > orderedPeople; //ordered the people according to their weights
+
+    //initialized dynamic programming array used to solve the subproblems
+    //and subsequently the largest final problem
+    int D[1200][1200] = {0};
 
     for (int i = 0; i < nPeople; i++){
         orderedPeople.push(people[i]);
@@ -44,13 +55,20 @@ int dynamicBackpack(int prices[], int weights[], int nObjects, int people[], int
     while (!orderedPeople.empty()){
         cout << orderedPeople.top() << endl;
         orderedPeople.pop();
-
-        //while the top element of ordered people, is the
-        //same as the weight I am currently in
-        //I will add the current max to max and pop the weight
-        //So on until the list is empty
     }
 
+    //dynamic programming solution
+    //r starts in 1 since the first row is going to stay
+    //filled with 0s
+    for (int r = 1; r < nObjects; r++){
+
+
+        for (int c = 0; c < maxPersonCapacity; c++){
+
+        }
+
+
+    }
 
     return max;
 }
@@ -81,11 +99,11 @@ int main(int argc, char const* argv[])
         people = new int[nPeople];
 
         //get maximum weight that each person can carry from stdin
-        requestWeights(people, nPeople);
+        int maxCapacity = requestWeights(people, nPeople);
         printWeights(people, nPeople);
 
         //get the maximum value of goods I can get with this group
-        maxValue = dynamicBackpack(prices, weights, nObjects, people, nPeople);
+        maxValue = dynamicBackpack(prices, weights, nObjects, people, nPeople, maxCapacity);
 
         cout << "This is the max value your group can carry: " << maxValue << endl;
 
